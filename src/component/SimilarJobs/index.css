@@ -1,0 +1,35 @@
+.similar-job-card {
+  width: 25%;
+  background-color: #272727;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: 20px;
+  padding-bottom: 20px;
+  color: #ffffff;
+  min-height: 50vh;
+}
+
+.similar-job-description {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.similar-job-logo {
+  width: 100%;
+  color: #ffffff;
+}
+
+.title {
+  font-size: 24px;
+}
+
+@media screen and (max-width: 567px) {
+  .similar-job-card {
+    width: 100%;
+  }
+}

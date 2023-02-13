@@ -1,0 +1,22 @@
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 567px) {
+  .not-found-path {
+    width: 100%;
+  }
+  .not-found-container {
+    min-height: 100vh;
+  }
+  .not-found-content {
+    margin: 20px;
+    text-align: center;
+  }
+}

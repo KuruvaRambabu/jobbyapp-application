@@ -1,0 +1,24 @@
+.skill-container {
+  display: flex;
+  width: 25%;
+  height: 100px;
+  justify-content: flex-start;
+  align-items: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.skill-name {
+  padding-left: 20px;
+}
+
+.skill-logo {
+  width: 60px;
+}
+
+@media screen and (max-width: 567px) {
+  .skill-container {
+    width: 49%;
+  }
+}

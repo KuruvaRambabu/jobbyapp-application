@@ -1,6 +1,5 @@
-import {Component} from 'react'
+import {useState, useEffect} from 'react'
 import Loader from 'react-loader-spinner'
-
 import Cookies from 'js-cookie'
 
 import './index.css'
@@ -12,33 +11,37 @@ const apiConstants = {
   initial: 'INITIAL',
 }
 
-class Profile extends Component {
-  state = {
+const Profile = () => {
+  const [profileApiResponse, updateProfileAPiResponse] = useState({
     apiStatus: apiConstants.initial,
     profileData: {},
-  }
+  })
 
-  componentDidMount() {
-    this.getProfileData()
-  }
-
-  onProfileAPISuccess = data => {
+  const onProfileAPISuccess = data => {
     const profileDetails = data.profile_details
     const formattedData = {
       name: profileDetails.name,
       profileImageUrl: profileDetails.profile_image_url,
       shortBio: profileDetails.short_bio,
     }
-    console.log(formattedData)
-    this.setState({apiStatus: apiConstants.success, profileData: formattedData})
+    updateProfileAPiResponse({
+      apiStatus: apiConstants.success,
+      profileData: formattedData,
+    })
   }
 
-  onProfileAPIFailure = () => {
-    this.setState({apiStatus: apiConstants.failure})
+  const onProfileAPIFailure = () => {
+    updateProfileAPiResponse(prevRes => ({
+      ...prevRes,
+      apiStatus: apiConstants.failure,
+    }))
   }
 
-  getProfileData = async () => {
-    this.setState({apiStatus: apiConstants.fetching})
+  const getProfileData = async () => {
+    updateProfileAPiResponse(prevRes => ({
+      ...prevRes,
+      apiStatus: apiConstants.fetching,
+    }))
     const url = 'https://apis.ccbp.in/profile'
     const jwtToken = Cookies.get('jwt_token')
     const options = {
@@ -50,20 +53,24 @@ class Profile extends Component {
     const response = await fetch(url, options)
     const data = await response.json()
     if (response.ok === true) {
-      this.onProfileAPISuccess(data)
+      onProfileAPISuccess(data)
     } else {
-      this.onProfileAPIFailure(data)
+      onProfileAPIFailure(data)
     }
   }
 
-  renderLoadingView = () => (
+  useEffect(() => {
+    getProfileData()
+  }, [])
+
+  const renderLoadingView = () => (
     <div className="loader-container" data-testid="loader">
       <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
     </div>
   )
 
-  renderSuccessView = () => {
-    const {profileData} = this.state
+  const renderSuccessView = () => {
+    const {profileData} = profileApiResponse
 
     const {profileImageUrl, shortBio, name} = profileData
     return (
@@ -75,38 +82,32 @@ class Profile extends Component {
     )
   }
 
-  renderFailureView = () => (
+  const renderFailureView = () => (
     <button
       className="profile-retry-btn"
-      onClick={this.getProfileData}
+      onClick={getProfileData}
       type="button"
     >
       Retry
     </button>
   )
 
-  renderProfileDetails = () => {
-    const {apiStatus} = this.state
+  const renderProfileDetails = () => {
+    const {apiStatus} = profileApiResponse
 
     switch (apiStatus) {
       case apiConstants.fetching:
-        return this.renderLoadingView()
+        return renderLoadingView()
       case apiConstants.success:
-        return this.renderSuccessView()
+        return renderSuccessView()
       case apiConstants.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       default:
         return ''
     }
   }
 
-  render() {
-    return (
-      <div className="profile-card-container">
-        {this.renderProfileDetails()}
-      </div>
-    )
-  }
+  return <div className="profile-card-container">{renderProfileDetails()}</div>
 }
 
 export default Profile

@@ -2,8 +2,6 @@ import {AiFillStar} from 'react-icons/ai'
 import {IoLocationOutline} from 'react-icons/io5'
 import {BsBriefcase} from 'react-icons/bs'
 
-import {Link} from 'react-router-dom'
-
 import './index.css'
 
 const SimilarJobs = props => {
@@ -15,11 +13,9 @@ const SimilarJobs = props => {
     location,
     rating,
     title,
-    id,
   } = job
   console.log(job)
   return (
-    // <Link to={`/jobs/${id}`}>
     <li className="similar-job-card">
       <div className="similar-job-logo job-logo-container">
         <img
@@ -52,7 +48,6 @@ const SimilarJobs = props => {
         </div>
       </div>
     </li>
-    // </Link>
   )
 }
 

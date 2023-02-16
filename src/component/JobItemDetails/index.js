@@ -1,17 +1,17 @@
-import {Component} from 'react'
+import {useState, useEffect} from 'react'
 import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
-
+import {useParams} from 'react-router-dom'
 import {AiFillStar} from 'react-icons/ai'
 import {IoLocationOutline} from 'react-icons/io5'
 import {BsBriefcase} from 'react-icons/bs'
 import {BiLinkExternal} from 'react-icons/bi'
 
 import withHeader from '../Hocs'
-
-import './index.css'
 import Skills from '../Skills'
 import SimilarJobs from '../SimilarJobs'
+
+import './index.css'
 
 const apiConstants = {
   fetching: 'FETCHING',
@@ -20,18 +20,16 @@ const apiConstants = {
   initial: 'INITIAL',
 }
 
-class JobDetails extends Component {
-  state = {
+const JobDetails = () => {
+  const [apiResponse, updateAPIResponse] = useState({
     jobData: {},
     similarJobs: [],
     apiStatus: apiConstants.initial,
-  }
+  })
+  const jobsId = useParams()
+  console.log(jobsId)
 
-  componentDidMount() {
-    this.doJobInfoAPI()
-  }
-
-  onJobInfoAPISuccess = data => {
+  const onJobInfoAPISuccess = data => {
     const jobDetails = data.job_details
     const similarJobs = data.similar_jobs
     const formattedJobDetails = {
@@ -59,22 +57,26 @@ class JobDetails extends Component {
       title: job.title,
     }))
 
-    this.setState({
+    updateAPIResponse({
       jobData: formattedJobDetails,
       apiStatus: apiConstants.success,
       similarJobs: formattedSimilarJobs,
     })
   }
 
-  onJobInfoAPIFailure = () => {
-    this.setState({apiStatus: apiConstants.failure})
+  const onJobInfoAPIFailure = () => {
+    updateAPIResponse(prevResponse => ({
+      ...prevResponse,
+      apiStatus: apiConstants.failure,
+    }))
   }
 
-  doJobInfoAPI = async () => {
-    const {match} = this.props
-    const {params} = match
-    const {id} = params
-    this.setState({apiStatus: apiConstants.fetching})
+  const doJobInfoAPI = async () => {
+    const {id} = jobsId
+    updateAPIResponse(prevResponse => ({
+      ...prevResponse,
+      apiStatus: apiConstants.fetching,
+    }))
 
     const url = `https://apis.ccbp.in/jobs/${id}`
     const jwtToken = Cookies.get('jwt_token')
@@ -89,19 +91,23 @@ class JobDetails extends Component {
     const data = await response.json()
 
     if (response.ok === true) {
-      this.onJobInfoAPISuccess(data)
+      onJobInfoAPISuccess(data)
     } else {
-      this.onJobInfoAPIFailure()
+      onJobInfoAPIFailure()
     }
   }
 
-  renderJobLoadingView = () => (
+  useEffect(() => {
+    doJobInfoAPI()
+  }, [])
+
+  const renderJobLoadingView = () => (
     <div className="loader-container jobs-loader" data-testid="loader">
       <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
     </div>
   )
 
-  renderJobFailureView = () => (
+  const renderJobFailureView = () => (
     <div className="failure-container">
       <img
         src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
@@ -111,7 +117,7 @@ class JobDetails extends Component {
       <p>We cannot seem to find the page you are looking for.</p>
       <button
         type="button"
-        onClick={this.doJobInfoAPI}
+        onClick={doJobInfoAPI}
         className="profile-retry-btn"
       >
         Retry
@@ -119,7 +125,7 @@ class JobDetails extends Component {
     </div>
   )
 
-  getFormattedSkills = skills => {
+  const getFormattedSkills = skills => {
     const formattedSkils = skills.map(skill => ({
       imageUrl: skill.image_url,
       name: skill.name,
@@ -127,21 +133,21 @@ class JobDetails extends Component {
     return formattedSkils
   }
 
-  renderSimilarJobs = () => {
-    const {similarJobs} = this.state
+  const renderSimilarJobs = () => {
+    const {similarJobs} = apiResponse
     return (
       <div className="similar-jobs-container">
         <h1>Similar jobs</h1>
         <ul className="similar-jobs">
           {similarJobs.map(job => (
-            <SimilarJobs job={job} />
+            <SimilarJobs key={job.id} job={job} />
           ))}
         </ul>
       </div>
     )
   }
 
-  renderLifeAtCompany = lifeAtCompany => {
+  const renderLifeAtCompany = lifeAtCompany => {
     const formattedLifeAtCompany = {
       description: lifeAtCompany.description,
       imageUrl: lifeAtCompany.image_url,
@@ -160,8 +166,8 @@ class JobDetails extends Component {
     )
   }
 
-  renderJobSuccessView = () => {
-    const {jobData} = this.state
+  const renderJobSuccessView = () => {
+    const {jobData} = apiResponse
     const {
       companyLogoUrl,
       companyWebsiteUrl,
@@ -174,7 +180,7 @@ class JobDetails extends Component {
       skills,
       title,
     } = jobData
-    const formattedSkills = this.getFormattedSkills(skills)
+    const formattedSkills = getFormattedSkills(skills)
     return (
       <>
         <div className="job-details-main-container">
@@ -223,41 +229,37 @@ class JobDetails extends Component {
 
             <ul className="skills-main-container">
               {formattedSkills.map(skill => (
-                <Skills skill={skill} />
+                <Skills key={skill.id} skill={skill} />
               ))}
             </ul>
-            <div>{this.renderLifeAtCompany(lifeAtCompany)}</div>
+            <div>{renderLifeAtCompany(lifeAtCompany)}</div>
           </div>
         </div>
-        <div className="similar-jobs-main-container">
-          {this.renderSimilarJobs()}
-        </div>
+        <div className="similar-jobs-main-container">{renderSimilarJobs()}</div>
       </>
     )
   }
 
-  renderJobDetails = () => {
-    const {apiStatus} = this.state
+  const renderJobDetails = () => {
+    const {apiStatus} = apiResponse
 
     switch (apiStatus) {
       case apiConstants.fetching:
-        return this.renderJobLoadingView()
+        return renderJobLoadingView()
       case apiConstants.success:
-        return this.renderJobSuccessView()
+        return renderJobSuccessView()
       case apiConstants.failure:
-        return this.renderJobFailureView()
+        return renderJobFailureView()
       default:
         return ''
     }
   }
 
-  render() {
-    return (
-      <div className="job-details-container">
-        <div className="job-details-section">{this.renderJobDetails()}</div>
-      </div>
-    )
-  }
+  return (
+    <div className="job-details-container">
+      <div className="job-details-section">{renderJobDetails()}</div>
+    </div>
+  )
 }
 
 export default withHeader(JobDetails)

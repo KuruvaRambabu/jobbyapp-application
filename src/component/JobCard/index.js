@@ -1,5 +1,4 @@
 import {Link} from 'react-router-dom'
-
 import {AiFillStar} from 'react-icons/ai'
 import {IoLocationOutline} from 'react-icons/io5'
 import {BsBriefcase} from 'react-icons/bs'

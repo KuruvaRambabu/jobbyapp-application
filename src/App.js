@@ -8,9 +8,6 @@ import Jobs from './component/Jobs'
 import JobDetails from './component/JobItemDetails'
 import NotFound from './component/NotFound'
 
-// These are the lists used in the application. You can move them to any component needed.
-
-// Replace your code here
 const App = () => (
   <Switch>
     <Route exact path="/login" component={Login} />

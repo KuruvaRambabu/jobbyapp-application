@@ -1,15 +1,15 @@
-import {Component} from 'react'
+import {useEffect, useState} from 'react'
 import Loader from 'react-loader-spinner'
 import {BsSearch} from 'react-icons/bs'
 import Cookies from 'js-cookie'
 
 import withHeader from '../Hocs'
 import Profile from '../Profile'
-
-import './index.css'
 import DisplayFilters from '../DisplayFilters'
 import SalaryRangeFilter from '../SalaryRange'
 import JobCard from '../JobCard'
+
+import './index.css'
 
 const employmentTypesList = [
   {
@@ -56,20 +56,16 @@ const apiConstants = {
   initial: 'INITIAL',
 }
 
-class Jobs extends Component {
-  state = {
+const Jobs = () => {
+  const [employementFilters, upDateEmployementFilter] = useState([])
+  const [salaryRangeFilter, updateSalaryrangeFilter] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [apiResponse, updateAPIResponse] = useState({
     jobsData: [],
-    employementFilters: [],
-    salaryRangeFilter: '',
     apiStatus: apiConstants.initial,
-    searchInput: '',
-  }
+  })
 
-  componentDidMount() {
-    this.getJobsAPIData()
-  }
-
-  onJobsAPISuccess = data => {
+  const onJobsAPISuccess = data => {
     const {jobs} = data
     const formattedJobsData = jobs.map(job => ({
       companyUrl: job.company_logo_url,
@@ -81,24 +77,28 @@ class Jobs extends Component {
       rating: job.rating,
       title: job.title,
     }))
-    this.setState({
+
+    updateAPIResponse({
       apiStatus: apiConstants.success,
       jobsData: [...formattedJobsData],
     })
+
     console.log(formattedJobsData)
   }
 
-  onJobsAPIFailure = () => {
-    this.setState({apiStatus: apiConstants.failure})
+  const onJobsAPIFailure = () => {
+    updateAPIResponse(prevResponse => ({
+      ...prevResponse,
+      apiStatus: apiConstants.failure,
+    }))
   }
 
-  getJobsAPIData = async () => {
-    const {employementFilters, searchInput, salaryRangeFilter} = this.state
+  const getJobsAPIData = async () => {
     const employmentFilters = employementFilters.join(',')
-    this.setState({apiStatus: apiConstants.fetching})
-
-    console.log(employmentFilters, searchInput, salaryRangeFilter)
-    console.log(searchInput)
+    updateAPIResponse(prevResponse => ({
+      ...prevResponse,
+      apiStatus: apiConstants.fetching,
+    }))
 
     const url = `https://apis.ccbp.in/jobs?employment_type=${employmentFilters}&minimum_package=${salaryRangeFilter}&search=${searchInput}`
     const jwtToken = Cookies.get('jwt_token')
@@ -113,19 +113,22 @@ class Jobs extends Component {
     const data = await response.json()
 
     if (response.ok === true) {
-      this.onJobsAPISuccess(data)
+      onJobsAPISuccess(data)
     } else {
-      this.onJobsAPIFailure()
+      onJobsAPIFailure()
     }
   }
+  useEffect(() => {
+    getJobsAPIData()
+  }, [employementFilters, salaryRangeFilter, searchInput])
 
-  renderJobsLoadingView = () => (
+  const renderJobsLoadingView = () => (
     <div className="loader-container jobs-loader" data-testid="loader">
       <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
     </div>
   )
 
-  renderJobsFailureView = () => (
+  const renderJobsFailureView = () => (
     <div className="failure-container">
       <img
         src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
@@ -135,7 +138,7 @@ class Jobs extends Component {
       <p>We cannot seem to find the page you are looking for.</p>
       <button
         type="button"
-        onClick={this.getJobsAPIData}
+        onClick={getJobsAPIData}
         className="profile-retry-btn"
       >
         Retry
@@ -143,8 +146,8 @@ class Jobs extends Component {
     </div>
   )
 
-  renderJobsSuccessView = () => {
-    const {jobsData} = this.state
+  const renderJobsSuccessView = () => {
+    const {jobsData} = apiResponse
 
     if (jobsData.length > 0) {
       return (
@@ -168,24 +171,24 @@ class Jobs extends Component {
     )
   }
 
-  renderJobsRightSideSection = () => {
-    const {apiStatus} = this.state
+  const renderJobsRightSideSection = () => {
+    const {apiStatus} = apiResponse
 
     switch (apiStatus) {
       case apiConstants.fetching:
-        return this.renderJobsLoadingView()
+        return renderJobsLoadingView()
       case apiConstants.success:
-        return this.renderJobsSuccessView()
+        return renderJobsSuccessView()
       case apiConstants.failure:
-        return this.renderJobsFailureView()
+        return renderJobsFailureView()
       default:
         return ''
     }
   }
 
-  onSelectEmploymentType = event => {
+  const onSelectEmploymentType = event => {
     const data = event.target.id
-    const {employementFilters} = this.state
+
     const filtersCopy = [...employementFilters]
     const index = filtersCopy.indexOf(data)
     if (index === -1) {
@@ -193,22 +196,22 @@ class Jobs extends Component {
     } else {
       filtersCopy.splice(index, 1)
     }
-    this.setState({employementFilters: [...filtersCopy]}, this.getJobsAPIData)
+    upDateEmployementFilter([...filtersCopy])
   }
 
-  onChangeSalaryRange = async event => {
-    this.setState({salaryRangeFilter: event.target.id}, this.getJobsAPIData)
+  const onChangeSalaryRange = async event => {
+    updateSalaryrangeFilter(event.target.id)
   }
 
-  onClickSearchButton = () => {
-    this.getJobsAPIData()
+  const onClickSearchButton = () => {
+    getJobsAPIData()
   }
 
-  onChangeSearchInput = event => {
-    this.setState({searchInput: event.target.value}, this.getJobsAPIData)
+  const onChangeSearchInput = event => {
+    setSearchInput(event.target.value)
   }
 
-  renderLeftSideSection = () => (
+  const renderLeftSideSection = () => (
     <>
       <Profile />
       <hr className="horizontal-line" />
@@ -217,7 +220,7 @@ class Jobs extends Component {
 
         {employmentTypesList.map(type => (
           <DisplayFilters
-            onSelectEmploymentType={this.onSelectEmploymentType}
+            onSelectEmploymentType={onSelectEmploymentType}
             key={type.employmentTypeId}
             type={type}
           />
@@ -228,7 +231,7 @@ class Jobs extends Component {
         <p className="filter-heading">Salary Range</p>
         {salaryRangesList.map(salaryRange => (
           <SalaryRangeFilter
-            onChangeSalaryRange={this.onChangeSalaryRange}
+            onChangeSalaryRange={onChangeSalaryRange}
             key={salaryRange.salaryRangeId}
             salary={salaryRange}
           />
@@ -237,40 +240,35 @@ class Jobs extends Component {
     </>
   )
 
-  render() {
-    const {searchInput} = this.state
-    return (
-      <div className="jobs-main-container">
-        <div className="container">
-          <div className="jobs-left-section">
-            {this.renderLeftSideSection()}
-          </div>
-          <div className="jobs-right-section">
-            <div className="search-container">
-              <div className="search-cont">
-                <input
-                  className="search-input"
-                  type="search"
-                  placeholder="Search"
-                  value={searchInput}
-                  onChange={this.onChangeSearchInput}
-                />
-                <button
-                  onClick={this.onClickSearchButton}
-                  className="search-icon-btn"
-                  type="button"
-                  data-testid="searchButton"
-                >
-                  <BsSearch className="search-icon" />
-                </button>
-              </div>
+  return (
+    <div className="jobs-main-container">
+      <div className="container">
+        <div className="jobs-left-section">{renderLeftSideSection()}</div>
+        <div className="jobs-right-section">
+          <div className="search-container">
+            <div className="search-cont">
+              <input
+                className="search-input"
+                type="search"
+                placeholder="Search"
+                value={searchInput}
+                onChange={onChangeSearchInput}
+              />
+              <button
+                onClick={onClickSearchButton}
+                className="search-icon-btn"
+                type="button"
+                data-testid="searchButton"
+              >
+                <BsSearch className="search-icon" />
+              </button>
             </div>
-            {this.renderJobsRightSideSection()}
           </div>
+          {renderJobsRightSideSection()}
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 export default withHeader(Jobs)

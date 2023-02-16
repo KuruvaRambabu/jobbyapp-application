@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie'
 import {withRouter, Link} from 'react-router-dom'
-
 import {RiHome4Fill, RiLogoutBoxRLine} from 'react-icons/ri'
 import {BsBriefcase} from 'react-icons/bs'
 

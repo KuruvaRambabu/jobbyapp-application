@@ -14,7 +14,6 @@ const SimilarJobs = props => {
     rating,
     title,
   } = job
-  console.log(job)
   return (
     <li className="similar-job-card">
       <div className="similar-job-logo job-logo-container">

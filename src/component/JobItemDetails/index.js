@@ -1,17 +1,18 @@
-import {useState, useEffect} from 'react'
+import {useEffect, useContext} from 'react'
 import Loader from 'react-loader-spinner'
-import Cookies from 'js-cookie'
 import {useParams} from 'react-router-dom'
 import {AiFillStar} from 'react-icons/ai'
 import {IoLocationOutline} from 'react-icons/io5'
 import {BsBriefcase} from 'react-icons/bs'
 import {BiLinkExternal} from 'react-icons/bi'
+import {observer} from 'mobx-react'
 
 import withHeader from '../Hocs'
 import Skills from '../Skills'
 import SimilarJobs from '../SimilarJobs'
 
 import './index.css'
+import StoresContext from '../context/storeContext'
 
 const apiConstants = {
   fetching: 'FETCHING',
@@ -20,85 +21,23 @@ const apiConstants = {
   initial: 'INITIAL',
 }
 
-const JobDetails = () => {
-  const [apiResponse, updateAPIResponse] = useState({
-    jobData: {},
-    similarJobs: [],
-    apiStatus: apiConstants.initial,
-  })
+const JobDetails = observer(() => {
+  const store = useContext(StoresContext)
+  const {jobStore} = store
+
+  const {
+    getJobDetailsApi,
+    jobDetailsData,
+    similarJobsData,
+    jobDetailsApiStatus,
+  } = jobStore
+
   const jobsId = useParams()
-  console.log(jobsId)
-
-  const onJobInfoAPISuccess = data => {
-    const jobDetails = data.job_details
-    const similarJobs = data.similar_jobs
-    const formattedJobDetails = {
-      companyLogoUrl: jobDetails.company_logo_url,
-      companyWebsiteUrl: jobDetails.company_website_url,
-      employmentType: jobDetails.employment_type,
-      id: jobDetails.id,
-      jobDescription: jobDetails.job_description,
-      lifeAtCompany: jobDetails.life_at_company,
-      location: jobDetails.location,
-      packagePerAnnum: jobDetails.package_per_annum,
-      rating: jobDetails.rating,
-      skills: jobDetails.skills,
-      title: jobDetails.title,
-    }
-
-    const formattedSimilarJobs = similarJobs.map(job => ({
-      companyUrl: job.company_logo_url,
-      employmentType: job.employment_type,
-      id: job.id,
-      jobDescription: job.job_description,
-      location: job.location,
-      packagePerAnnum: job.package_per_annum,
-      rating: job.rating,
-      title: job.title,
-    }))
-
-    updateAPIResponse({
-      jobData: formattedJobDetails,
-      apiStatus: apiConstants.success,
-      similarJobs: formattedSimilarJobs,
-    })
-  }
-
-  const onJobInfoAPIFailure = () => {
-    updateAPIResponse(prevResponse => ({
-      ...prevResponse,
-      apiStatus: apiConstants.failure,
-    }))
-  }
-
-  const doJobInfoAPI = async () => {
-    const {id} = jobsId
-    updateAPIResponse(prevResponse => ({
-      ...prevResponse,
-      apiStatus: apiConstants.fetching,
-    }))
-
-    const url = `https://apis.ccbp.in/jobs/${id}`
-    const jwtToken = Cookies.get('jwt_token')
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
-
-    const response = await fetch(url, options)
-    const data = await response.json()
-
-    if (response.ok === true) {
-      onJobInfoAPISuccess(data)
-    } else {
-      onJobInfoAPIFailure()
-    }
-  }
 
   useEffect(() => {
-    doJobInfoAPI()
+    const {id} = jobsId
+
+    getJobDetailsApi(id)
   }, [])
 
   const renderJobLoadingView = () => (
@@ -117,7 +56,7 @@ const JobDetails = () => {
       <p>We cannot seem to find the page you are looking for.</p>
       <button
         type="button"
-        onClick={doJobInfoAPI}
+        onClick={getJobDetailsApi}
         className="profile-retry-btn"
       >
         Retry
@@ -125,35 +64,19 @@ const JobDetails = () => {
     </div>
   )
 
-  const getFormattedSkills = skills => {
-    const formattedSkils = skills.map(skill => ({
-      imageUrl: skill.image_url,
-      name: skill.name,
-    }))
-    return formattedSkils
-  }
-
-  const renderSimilarJobs = () => {
-    const {similarJobs} = apiResponse
-    return (
-      <div className="similar-jobs-container">
-        <h1>Similar jobs</h1>
-        <ul className="similar-jobs">
-          {similarJobs.map(job => (
-            <SimilarJobs key={job.id} job={job} />
-          ))}
-        </ul>
-      </div>
-    )
-  }
+  const renderSimilarJobs = () => (
+    <div className="similar-jobs-container">
+      <h1>Similar jobs</h1>
+      <ul className="similar-jobs">
+        {similarJobsData.map(job => (
+          <SimilarJobs key={job.id} job={job} />
+        ))}
+      </ul>
+    </div>
+  )
 
   const renderLifeAtCompany = lifeAtCompany => {
-    const formattedLifeAtCompany = {
-      description: lifeAtCompany.description,
-      imageUrl: lifeAtCompany.image_url,
-    }
-    const {description, imageUrl} = formattedLifeAtCompany
-    console.log(formattedLifeAtCompany)
+    const {description, imageUrl} = lifeAtCompany
 
     return (
       <div className="life-at-company-container">
@@ -167,7 +90,6 @@ const JobDetails = () => {
   }
 
   const renderJobSuccessView = () => {
-    const {jobData} = apiResponse
     const {
       companyLogoUrl,
       companyWebsiteUrl,
@@ -179,8 +101,7 @@ const JobDetails = () => {
       rating,
       skills,
       title,
-    } = jobData
-    const formattedSkills = getFormattedSkills(skills)
+    } = jobDetailsData
     return (
       <>
         <div className="job-details-main-container">
@@ -228,7 +149,7 @@ const JobDetails = () => {
             <h1>Skills</h1>
 
             <ul className="skills-main-container">
-              {formattedSkills.map(skill => (
+              {skills.map(skill => (
                 <Skills key={skill.id} skill={skill} />
               ))}
             </ul>
@@ -241,9 +162,7 @@ const JobDetails = () => {
   }
 
   const renderJobDetails = () => {
-    const {apiStatus} = apiResponse
-
-    switch (apiStatus) {
+    switch (jobDetailsApiStatus) {
       case apiConstants.fetching:
         return renderJobLoadingView()
       case apiConstants.success:
@@ -260,6 +179,6 @@ const JobDetails = () => {
       <div className="job-details-section">{renderJobDetails()}</div>
     </div>
   )
-}
+})
 
 export default withHeader(JobDetails)

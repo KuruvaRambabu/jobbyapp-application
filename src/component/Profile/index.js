@@ -1,63 +1,17 @@
-import {useState, useEffect} from 'react'
+import {useEffect, useContext} from 'react'
 import Loader from 'react-loader-spinner'
-import Cookies from 'js-cookie'
+import {observer} from 'mobx-react'
+
+import apiConstants from '../constants/apiConstants'
 
 import './index.css'
+import StoresContext from '../context/storeContext'
 
-const apiConstants = {
-  fetching: 'FETCHING',
-  success: 'SUCCESS',
-  failure: 'FAILURE',
-  initial: 'INITIAL',
-}
+const Profile = observer(() => {
+  const store = useContext(StoresContext)
 
-const Profile = () => {
-  const [profileApiResponse, updateProfileAPiResponse] = useState({
-    apiStatus: apiConstants.initial,
-    profileData: {},
-  })
-
-  const onProfileAPISuccess = data => {
-    const profileDetails = data.profile_details
-    const formattedData = {
-      name: profileDetails.name,
-      profileImageUrl: profileDetails.profile_image_url,
-      shortBio: profileDetails.short_bio,
-    }
-    updateProfileAPiResponse({
-      apiStatus: apiConstants.success,
-      profileData: formattedData,
-    })
-  }
-
-  const onProfileAPIFailure = () => {
-    updateProfileAPiResponse(prevRes => ({
-      ...prevRes,
-      apiStatus: apiConstants.failure,
-    }))
-  }
-
-  const getProfileData = async () => {
-    updateProfileAPiResponse(prevRes => ({
-      ...prevRes,
-      apiStatus: apiConstants.fetching,
-    }))
-    const url = 'https://apis.ccbp.in/profile'
-    const jwtToken = Cookies.get('jwt_token')
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
-    const response = await fetch(url, options)
-    const data = await response.json()
-    if (response.ok === true) {
-      onProfileAPISuccess(data)
-    } else {
-      onProfileAPIFailure(data)
-    }
-  }
+  const {jobStore} = store
+  const {profileApiStatus, profileData, getProfileData} = jobStore
 
   useEffect(() => {
     getProfileData()
@@ -70,8 +24,6 @@ const Profile = () => {
   )
 
   const renderSuccessView = () => {
-    const {profileData} = profileApiResponse
-
     const {profileImageUrl, shortBio, name} = profileData
     return (
       <div className="profile-details-container">
@@ -93,9 +45,7 @@ const Profile = () => {
   )
 
   const renderProfileDetails = () => {
-    const {apiStatus} = profileApiResponse
-
-    switch (apiStatus) {
+    switch (profileApiStatus) {
       case apiConstants.fetching:
         return renderLoadingView()
       case apiConstants.success:
@@ -108,6 +58,6 @@ const Profile = () => {
   }
 
   return <div className="profile-card-container">{renderProfileDetails()}</div>
-}
+})
 
 export default Profile

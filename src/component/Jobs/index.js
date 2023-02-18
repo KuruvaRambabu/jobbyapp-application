@@ -1,7 +1,7 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useContext} from 'react'
 import Loader from 'react-loader-spinner'
 import {BsSearch} from 'react-icons/bs'
-import Cookies from 'js-cookie'
+import {observer} from 'mobx-react'
 
 import withHeader from '../Hocs'
 import Profile from '../Profile'
@@ -9,117 +9,24 @@ import DisplayFilters from '../DisplayFilters'
 import SalaryRangeFilter from '../SalaryRange'
 import JobCard from '../JobCard'
 
+import apiConstants from '../constants/apiConstants'
+import employmentTypesList from '../constants/employmentTypeConstants'
+import salaryRangesList from '../constants/salaryRangeConstants'
+import StoresContext from '../context/storeContext'
+
 import './index.css'
 
-const employmentTypesList = [
-  {
-    label: 'Full Time',
-    employmentTypeId: 'FULLTIME',
-  },
-  {
-    label: 'Part Time',
-    employmentTypeId: 'PARTTIME',
-  },
-  {
-    label: 'Freelance',
-    employmentTypeId: 'FREELANCE',
-  },
-  {
-    label: 'Internship',
-    employmentTypeId: 'INTERNSHIP',
-  },
-]
-
-const salaryRangesList = [
-  {
-    salaryRangeId: '1000000',
-    label: '10 LPA and above',
-  },
-  {
-    salaryRangeId: '2000000',
-    label: '20 LPA and above',
-  },
-  {
-    salaryRangeId: '3000000',
-    label: '30 LPA and above',
-  },
-  {
-    salaryRangeId: '4000000',
-    label: '40 LPA and above',
-  },
-]
-
-const apiConstants = {
-  fetching: 'FETCHING',
-  success: 'SUCCESS',
-  failure: 'FAILURE',
-  initial: 'INITIAL',
-}
-
-const Jobs = () => {
+const Jobs = observer(() => {
   const [employementFilters, upDateEmployementFilter] = useState([])
   const [salaryRangeFilter, updateSalaryrangeFilter] = useState('')
   const [searchInput, setSearchInput] = useState('')
-  const [apiResponse, updateAPIResponse] = useState({
-    jobsData: [],
-    apiStatus: apiConstants.initial,
-  })
 
-  const onJobsAPISuccess = data => {
-    const {jobs} = data
-    const formattedJobsData = jobs.map(job => ({
-      companyUrl: job.company_logo_url,
-      employmentType: job.employment_type,
-      id: job.id,
-      jobDescription: job.job_description,
-      location: job.location,
-      packagePerAnnum: job.package_per_annum,
-      rating: job.rating,
-      title: job.title,
-    }))
+  const store = useContext(StoresContext)
+  const {jobStore} = store
+  const {getJobsDataApi} = jobStore
 
-    updateAPIResponse({
-      apiStatus: apiConstants.success,
-      jobsData: [...formattedJobsData],
-    })
-
-    console.log(formattedJobsData)
-  }
-
-  const onJobsAPIFailure = () => {
-    updateAPIResponse(prevResponse => ({
-      ...prevResponse,
-      apiStatus: apiConstants.failure,
-    }))
-  }
-
-  const getJobsAPIData = async () => {
-    const employmentFilters = employementFilters.join(',')
-    updateAPIResponse(prevResponse => ({
-      ...prevResponse,
-      apiStatus: apiConstants.fetching,
-    }))
-
-    const url = `https://apis.ccbp.in/jobs?employment_type=${employmentFilters}&minimum_package=${salaryRangeFilter}&search=${searchInput}`
-    const jwtToken = Cookies.get('jwt_token')
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
-
-    const response = await fetch(url, options)
-    const data = await response.json()
-
-    if (response.ok === true) {
-      onJobsAPISuccess(data)
-    } else {
-      onJobsAPIFailure()
-    }
-  }
   useEffect(() => {
-    getJobsAPIData()
+    getJobsDataApi(employementFilters, salaryRangeFilter, searchInput)
   }, [employementFilters, salaryRangeFilter, searchInput])
 
   const renderJobsLoadingView = () => (
@@ -138,7 +45,7 @@ const Jobs = () => {
       <p>We cannot seem to find the page you are looking for.</p>
       <button
         type="button"
-        onClick={getJobsAPIData}
+        onClick={getJobsDataApi}
         className="profile-retry-btn"
       >
         Retry
@@ -147,12 +54,12 @@ const Jobs = () => {
   )
 
   const renderJobsSuccessView = () => {
-    const {jobsData} = apiResponse
+    const {jobList} = jobStore
 
-    if (jobsData.length > 0) {
+    if (jobList.length > 0) {
       return (
         <ul>
-          {jobsData.map(jobData => (
+          {jobList.map(jobData => (
             <JobCard key={jobData.id} jobData={jobData} />
           ))}
         </ul>
@@ -172,9 +79,9 @@ const Jobs = () => {
   }
 
   const renderJobsRightSideSection = () => {
-    const {apiStatus} = apiResponse
+    const {jobsApiStatus} = jobStore
 
-    switch (apiStatus) {
+    switch (jobsApiStatus) {
       case apiConstants.fetching:
         return renderJobsLoadingView()
       case apiConstants.success:
@@ -204,7 +111,7 @@ const Jobs = () => {
   }
 
   const onClickSearchButton = () => {
-    getJobsAPIData()
+    getJobsDataApi()
   }
 
   const onChangeSearchInput = event => {
@@ -269,6 +176,6 @@ const Jobs = () => {
       </div>
     </div>
   )
-}
+})
 
 export default withHeader(Jobs)

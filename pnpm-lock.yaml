@@ -5,6 +5,9 @@ dependencies:
   chalk: 4.1.0
   history: 5.0.0
   js-cookie: 2.2.1
+  mobx: 6.8.0
+  mobx-react: 7.6.0_a249b4a71c1d63da2b03696c008f0e4d
+  mobx-react-devtools: 6.1.1_mobx-react@7.6.0+mobx@6.8.0
   msw: 0.28.1
   react: 17.0.1
   react-dom: 17.0.1_react@17.0.1
@@ -12,6 +15,7 @@ dependencies:
   react-loader-spinner: 4.0.0_react-dom@17.0.1+react@17.0.1
   react-router-dom: 5.2.0_react@17.0.1
 devDependencies:
+  '@babel/plugin-proposal-decorators': 7.20.13
   eslint-config-airbnb: 18.2.1
   eslint-config-prettier: 8.1.0
   eslint-plugin-prettier: 3.3.1_a5f306c245f9405bc973aa159985476e
@@ -158,6 +162,23 @@ packages:
       '@babel/core': ^7.0.0
     resolution:
       integrity: sha512-4tGORmfQcrc+bvrjb5y3dG9Mx1IOZjsHqQVUz7XCNHO+iTmqxWnVg3KRygjGmpRLJGdQSKuvFinbIb0CnZwHAQ==
+  /@babel/helper-create-class-features-plugin/7.20.12:
+    dependencies:
+      '@babel/helper-annotate-as-pure': 7.18.6
+      '@babel/helper-environment-visitor': 7.18.9
+      '@babel/helper-function-name': 7.19.0
+      '@babel/helper-member-expression-to-functions': 7.20.7
+      '@babel/helper-optimise-call-expression': 7.18.6
+      '@babel/helper-replace-supers': 7.20.7
+      '@babel/helper-skip-transparent-expression-wrappers': 7.20.0
+      '@babel/helper-split-export-declaration': 7.18.6
+    dev: true
+    engines:
+      node: '>=6.9.0'
+    peerDependencies:
+      '@babel/core': ^7.0.0
+    resolution:
+      integrity: sha512-9OunRkbT0JQcednL0UFvbfXpAsUXiGjUk0a7sN8fUXX7Mue79cUSMjHGDRRi/Vz9vYlpIhLV5fMD5dKoMhhsNQ==
   /@babel/helper-create-class-features-plugin/7.20.12_@babel+core@7.12.3:
     dependencies:
       '@babel/core': 7.12.3
@@ -567,6 +588,20 @@ packages:
       '@babel/core': ^7.12.0
     resolution:
       integrity: sha512-AveGOoi9DAjUYYuUAG//Ig69GlazLnoyzMw68VCDux+c1tsnnH/OkYcpz/5xzMkEFC6UxjR5Gw1c+iY2wOGVeQ==
+  /@babel/plugin-proposal-decorators/7.20.13:
+    dependencies:
+      '@babel/helper-create-class-features-plugin': 7.20.12
+      '@babel/helper-plugin-utils': 7.20.2
+      '@babel/helper-replace-supers': 7.20.7
+      '@babel/helper-split-export-declaration': 7.18.6
+      '@babel/plugin-syntax-decorators': 7.19.0
+    dev: true
+    engines:
+      node: '>=6.9.0'
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    resolution:
+      integrity: sha512-7T6BKHa9Cpd7lCueHBBzP0nkXNina+h5giOZw+a8ZpMfPFY19VjJAjIxyFHuWkhCWgL6QMqRiY/wB1fLXzm6Mw==
   /@babel/plugin-proposal-decorators/7.20.13_@babel+core@7.20.12:
     dependencies:
       '@babel/core': 7.20.12
@@ -958,6 +993,16 @@ packages:
       '@babel/core': ^7.0.0-0
     resolution:
       integrity: sha512-b+YyPmr6ldyNnM6sqYeMWE+bgJcJpO6yS4QD7ymxgH34GBPNDM/THBh8iunyvKIZztiwLH4CJZ0RxTk9emgpjw==
+  /@babel/plugin-syntax-decorators/7.19.0:
+    dependencies:
+      '@babel/helper-plugin-utils': 7.20.2
+    dev: true
+    engines:
+      node: '>=6.9.0'
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    resolution:
+      integrity: sha512-xaBZUEDntt4faL1yN8oIFlhfXeQAWJW7CLKYsHTUqriCUbj8xOra8bfxxKGi/UwExPFBuPdH4XfHc9rGQhrVkQ==
   /@babel/plugin-syntax-decorators/7.19.0_@babel+core@7.20.12:
     dependencies:
       '@babel/core': 7.20.12
@@ -9804,6 +9849,57 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+  /mobx-react-devtools/6.1.1_mobx-react@7.6.0+mobx@6.8.0:
+    dependencies:
+      mobx: 6.8.0
+      mobx-react: 7.6.0_a249b4a71c1d63da2b03696c008f0e4d
+    dev: false
+    peerDependencies:
+      mobx: ^4.3.1 || ^5.0.0
+      mobx-react: ^4.0.0 || ^5.0.0
+    resolution:
+      integrity: sha512-nc5IXLdEUFLn3wZal65KF3/JFEFd+mbH4KTz/IG5BOPyw7jo8z29w/8qm7+wiCyqVfUIgJ1gL4+HVKmcXIOgqA==
+  /mobx-react-lite/3.4.0_a249b4a71c1d63da2b03696c008f0e4d:
+    dependencies:
+      mobx: 6.8.0
+      react: 17.0.1
+      react-dom: 17.0.1_react@17.0.1
+    dev: false
+    peerDependencies:
+      mobx: ^6.1.0
+      react: ^16.8.0 || ^17 || ^18
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    resolution:
+      integrity: sha512-bRuZp3C0itgLKHu/VNxi66DN/XVkQG7xtoBVWxpvC5FhAqbOCP21+nPhULjnzEqd7xBMybp6KwytdUpZKEgpIQ==
+  /mobx-react/7.6.0_a249b4a71c1d63da2b03696c008f0e4d:
+    dependencies:
+      mobx: 6.8.0
+      mobx-react-lite: 3.4.0_a249b4a71c1d63da2b03696c008f0e4d
+      react: 17.0.1
+      react-dom: 17.0.1_react@17.0.1
+    dev: false
+    peerDependencies:
+      mobx: ^6.1.0
+      react: ^16.8.0 || ^17 || ^18
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    resolution:
+      integrity: sha512-+HQUNuh7AoQ9ZnU6c4rvbiVVl+wEkb9WqYsVDzGLng+Dqj1XntHu79PvEWKtSMoMj67vFp/ZPXcElosuJO8ckA==
+  /mobx/6.8.0:
+    dev: false
+    resolution:
+      integrity: sha512-+o/DrHa4zykFMSKfS8Z+CPSEg5LW9tSNGTuN8o6MF1GKxlfkSHSeJn5UtgxvPkGgaouplnrLXCF+duAsmm6FHQ==
   /move-concurrently/1.0.1:
     dependencies:
       aproba: 1.2.0
@@ -14521,6 +14617,7 @@ packages:
     resolution:
       integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 specifiers:
+  '@babel/plugin-proposal-decorators': 7.20.13
   '@testing-library/jest-dom': 5.11.9
   '@testing-library/react': 11.2.5
   '@testing-library/user-event': 12.6.2
@@ -14532,6 +14629,9 @@ specifiers:
   husky: 4.3.8
   js-cookie: 2.2.1
   lint-staged: 10.5.4
+  mobx: 6.8.0
+  mobx-react: 7.6.0
+  mobx-react-devtools: 6.1.1
   msw: 0.28.1
   npm-run-all: 4.1.5
   prettier: 2.2.1

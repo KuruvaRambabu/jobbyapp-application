@@ -1,16 +1,25 @@
-import {useState} from 'react'
+import {useState, useContext} from 'react'
 import {withRouter, Redirect, useHistory} from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
+import {observer} from 'mobx-react'
+
+import StoresContext from '../context/storeContext'
 
 import './index.css'
+import apiConstants from '../constants/apiConstants'
 
-const Login = () => {
+const Login = observer(() => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [isLoading, setLoadingStatus] = useState(false)
   const [showSubmitError, setSubmitError] = useState(false)
   const [errorMessage, setErrorMsg] = useState('')
+
+  const store = useContext(StoresContext)
+  const {loginStore} = store
+  console.log('login', loginStore)
+  const {OnClickLogin, apiStatus} = loginStore
+
   const history = useHistory()
 
   const onChangeUsername = event => {
@@ -53,37 +62,20 @@ const Login = () => {
     </>
   )
 
-  const onSubmitSuccess = jwtToken => {
-    Cookies.set('jwt_token', jwtToken, {
-      expires: 30,
-      path: '/',
-    })
+  const onSubmitSuccess = () => {
     history.replace('/')
   }
 
   const onSubmitFailure = errorMsg => {
     setErrorMsg(errorMsg)
-    setLoadingStatus(false)
     setSubmitError(true)
   }
 
   const onSubmitForm = async event => {
     event.preventDefault()
-    setLoadingStatus(true)
-    const userDetails = {username, password}
-    const url = 'https://apis.ccbp.in/login'
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(userDetails),
-    }
 
-    const response = await fetch(url, options)
-    const data = await response.json()
-    if (response.ok === true) {
-      onSubmitSuccess(data.jwt_token)
-    } else {
-      onSubmitFailure(data.error_msg)
-    }
+    const userDetails = {username, password}
+    OnClickLogin(userDetails, onSubmitSuccess, onSubmitFailure)
   }
 
   const jwtToken = Cookies.get('jwt_token')
@@ -104,7 +96,7 @@ const Login = () => {
           <div>{renderUsernameInput()}</div>
           <div>{renderPasswordInput()}</div>
           {showSubmitError && <p className="error-message">{errorMessage}</p>}
-          {isLoading ? (
+          {apiStatus === apiConstants.fetching ? (
             <div className="loader-container login-button" data-testid="loader">
               <Loader type="Oval" color="#ffffff" height="30" width="50" />
             </div>
@@ -117,6 +109,6 @@ const Login = () => {
       </div>
     </div>
   )
-}
+})
 
 export default withRouter(Login)

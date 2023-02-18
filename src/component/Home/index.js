@@ -22,5 +22,4 @@ const Home = () => (
     </div>
   </div>
 )
-
 export default withRouter(withHeader(Home))

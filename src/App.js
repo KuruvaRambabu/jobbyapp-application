@@ -1,4 +1,4 @@
-import {Switch, Route} from 'react-router-dom'
+import {Routes, Route} from 'react-router-dom'
 import {observer} from 'mobx-react'
 
 import './App.css'
@@ -15,15 +15,14 @@ import StoresContext from './component/context/storeContext'
 const {loginStore, jobStore} = stores
 
 const App = observer(() => (
-  <Switch>
-    <StoresContext.Provider value={{loginStore, jobStore}}>
-      <Route exact path="/login" component={Login} />
-      <ProtectedRoute exact path="/" component={Home} />
-      <ProtectedRoute exact path="/jobs" component={Jobs} />
-      <ProtectedRoute exact path="/jobs/:id" component={JobDetails} />
-      <Route component={NotFound} />
-    </StoresContext.Provider>
-  </Switch>
+  <StoresContext.Provider value={{loginStore, jobStore}}>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/jobs" element={<Jobs />} />
+      <Route path="/jobs/:id" element={<JobDetails />} />
+    </Routes>
+  </StoresContext.Provider>
 ))
 
 export default App

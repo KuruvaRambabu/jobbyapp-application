@@ -1,5 +1,5 @@
 import {useState, useContext} from 'react'
-import {withRouter, Redirect, useHistory} from 'react-router-dom'
+import {useNavigate, Navigate} from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
 import {observer} from 'mobx-react'
@@ -12,15 +12,13 @@ import apiConstants from '../constants/apiConstants'
 const Login = observer(() => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [showSubmitError, setSubmitError] = useState(false)
   const [errorMessage, setErrorMsg] = useState('')
 
   const store = useContext(StoresContext)
   const {loginStore} = store
-  console.log('login', loginStore)
-  const {OnClickLogin, apiStatus} = loginStore
+  const {onClickLogin, apiStatus} = loginStore
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const onChangeUsername = event => {
     setUsername(event.target.value)
@@ -53,7 +51,7 @@ const Login = observer(() => {
       </label>
       <input
         type="password"
-        className="password-input"
+        className="password-input input"
         id="password"
         value={password}
         placeholder="Password"
@@ -63,24 +61,23 @@ const Login = observer(() => {
   )
 
   const onSubmitSuccess = () => {
-    history.replace('/')
+    navigate('/', {replace: true})
   }
 
   const onSubmitFailure = errorMsg => {
     setErrorMsg(errorMsg)
-    setSubmitError(true)
   }
 
   const onSubmitForm = async event => {
     event.preventDefault()
 
     const userDetails = {username, password}
-    OnClickLogin(userDetails, onSubmitSuccess, onSubmitFailure)
+    onClickLogin(userDetails, onSubmitSuccess, onSubmitFailure)
   }
 
   const jwtToken = Cookies.get('jwt_token')
   if (jwtToken !== undefined) {
-    return <Redirect to="/" />
+    return <Navigate to="/" replace />
   }
   return (
     <div className="login-container">
@@ -93,9 +90,9 @@ const Login = observer(() => {
           />
         </div>
         <form className="form-container" onSubmit={onSubmitForm}>
-          <div>{renderUsernameInput()}</div>
-          <div>{renderPasswordInput()}</div>
-          {showSubmitError && <p className="error-message">{errorMessage}</p>}
+          {renderUsernameInput()}
+          {renderPasswordInput()}
+          <p className="error-message">{errorMessage}</p>
           {apiStatus === apiConstants.fetching ? (
             <div className="loader-container login-button" data-testid="loader">
               <Loader type="Oval" color="#ffffff" height="30" width="50" />
@@ -111,4 +108,4 @@ const Login = observer(() => {
   )
 })
 
-export default withRouter(Login)
+export default Login

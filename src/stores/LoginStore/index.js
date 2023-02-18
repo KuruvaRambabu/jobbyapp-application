@@ -11,7 +11,7 @@ class LoginStore {
     makeAutoObservable(this)
   }
 
-  OnClickLogin = async (userDetails, onSubmitSuccess, onSubmitFailure) => {
+  onClickLogin = async (userDetails, onSubmitSuccess, onSubmitFailure) => {
     this.apiStatus = apiConstants.fetching
     const url = 'https://apis.ccbp.in/login'
     const options = {

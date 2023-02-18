@@ -44,6 +44,11 @@
   color: #ffffff;
   font-weight: bold;
   cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media screen and (max-width: 567px) {

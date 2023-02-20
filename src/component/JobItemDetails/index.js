@@ -7,12 +7,12 @@ import {BsBriefcase} from 'react-icons/bs'
 import {BiLinkExternal} from 'react-icons/bi'
 import {observer} from 'mobx-react'
 
-import withHeader from '../Hocs'
 import Skills from '../Skills'
 import SimilarJobs from '../SimilarJobs'
 
 import './index.css'
 import StoresContext from '../context/storeContext'
+import Header from '../Header'
 
 const apiConstants = {
   fetching: 'FETCHING',
@@ -164,10 +164,10 @@ const JobDetails = observer(() => {
   }
 
   const renderJobSuccessView = () => (
-    <>
+    <div className="job-details-section">
       {renderJobInformationInDetailedView()}
       {renderSimilarJobs()}
-    </>
+    </div>
   )
 
   const renderJobDetails = () => {
@@ -184,10 +184,11 @@ const JobDetails = observer(() => {
   }
 
   return (
-    <div className="job-details-container">
-      <div className="job-details-section">{renderJobDetails()}</div>
-    </div>
+    <>
+      <Header />
+      <div className="job-details-container">{renderJobDetails()}</div>
+    </>
   )
 })
 
-export default withHeader(JobDetails)
+export default JobDetails

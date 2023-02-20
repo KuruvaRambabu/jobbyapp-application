@@ -1,15 +1,15 @@
 import Cookies from 'js-cookie'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import {RiHome4Fill, RiLogoutBoxRLine} from 'react-icons/ri'
 import {BsBriefcase} from 'react-icons/bs'
 
 import './index.css'
 
-const Header = props => {
+const Header = () => {
+  const navigate = useNavigate()
   const onClickLogout = () => {
     Cookies.remove('jwt_token')
-    const {history} = props
-    history.replace('/login')
+    navigate('/login', {replace: true})
   }
 
   return (

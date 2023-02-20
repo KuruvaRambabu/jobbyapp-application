@@ -3,7 +3,6 @@ import Loader from 'react-loader-spinner'
 import {BsSearch} from 'react-icons/bs'
 import {observer} from 'mobx-react'
 
-import withHeader from '../Hocs'
 import Profile from '../Profile'
 import DisplayEmploymentTypeFilters from '../DisplayFilters'
 import SalaryRangeFilter from '../SalaryRange'
@@ -13,6 +12,7 @@ import apiConstants from '../constants/apiConstants'
 import employmentTypesList from '../constants/employmentTypeConstants'
 import salaryRangesList from '../constants/salaryRangeConstants'
 import StoresContext from '../context/storeContext'
+import Header from '../Header'
 
 import './index.css'
 
@@ -171,16 +171,19 @@ const Jobs = observer(() => {
   )
 
   return (
-    <div className="jobs-main-container">
-      <div className="container">
-        {renderLeftSideSection()}
-        <div className="jobs-right-section">
-          {renderJobsSearchInputField()}
-          {renderJobsRightSideSection()}
+    <>
+      <Header />
+      <div className="jobs-main-container">
+        <div className="container">
+          {renderLeftSideSection()}
+          <div className="jobs-right-section">
+            {renderJobsSearchInputField()}
+            {renderJobsRightSideSection()}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 })
 
-export default withHeader(Jobs)
+export default Jobs

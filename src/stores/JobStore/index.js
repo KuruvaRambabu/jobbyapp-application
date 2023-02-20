@@ -7,8 +7,6 @@ import JobDataModel from './models/jobsDatamodel'
 import ProfileDetailsModel from './models/profileDetailsModel'
 import JobDetailsModel from './models/jobDetails'
 
-const jwtToken = Cookies.get('jwt_token')
-
 class JobsStore {
   jobList = []
 
@@ -43,7 +41,7 @@ class JobsStore {
 
     const employmentFilters = employementFilters.join(',')
     this.apiStatus = apiConstants.fetching
-
+    const jwtToken = Cookies.get('jwt_token')
     const url = `https://apis.ccbp.in/jobs?employment_type=${employmentFilters}&minimum_package=${salaryRangeFilter}&search=${searchInput}`
     const options = {
       headers: {
@@ -75,6 +73,8 @@ class JobsStore {
   getProfileData = async () => {
     this.profileApiStatus = apiConstants.fetching
     const url = 'https://apis.ccbp.in/profile'
+    const jwtToken = Cookies.get('jwt_token')
+
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -104,6 +104,8 @@ class JobsStore {
     this.jobDetailsApiStatus = apiConstants.fetching
 
     const url = `https://apis.ccbp.in/jobs/${id}`
+    const jwtToken = Cookies.get('jwt_token')
+
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,

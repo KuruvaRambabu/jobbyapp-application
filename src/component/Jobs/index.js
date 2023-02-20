@@ -5,7 +5,7 @@ import {observer} from 'mobx-react'
 
 import withHeader from '../Hocs'
 import Profile from '../Profile'
-import DisplayFilters from '../DisplayFilters'
+import DisplayEmploymentTypeFilters from '../DisplayFilters'
 import SalaryRangeFilter from '../SalaryRange'
 import JobCard from '../JobCard'
 
@@ -53,6 +53,18 @@ const Jobs = observer(() => {
     </div>
   )
 
+  const renderNoJobsView = () => (
+    <div className="no-jobs-found-container ">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png "
+        alt="no jobs"
+        className="no-jobs-view"
+      />
+      <h1>No Jobs Found</h1>
+      <p>We could not find any jobs try other filter.</p>
+    </div>
+  )
+
   const renderJobsSuccessView = () => {
     const {jobList} = jobStore
 
@@ -65,17 +77,7 @@ const Jobs = observer(() => {
         </ul>
       )
     }
-    return (
-      <div className="failure-container">
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png "
-          alt="no jobs"
-          className="no-jobs-view"
-        />
-        <h1>No Jobs Found</h1>
-        <p>We could not find any jobs try other filter.</p>
-      </div>
-    )
+    return renderNoJobsView()
   }
 
   const renderJobsRightSideSection = () => {
@@ -118,15 +120,36 @@ const Jobs = observer(() => {
     setSearchInput(event.target.value)
   }
 
+  const renderJobsSearchInputField = () => (
+    <div className="search-main-container">
+      <div className="search-container">
+        <input
+          className="search-input"
+          type="search"
+          placeholder="Search"
+          value={searchInput}
+          onChange={onChangeSearchInput}
+        />
+        <button
+          onClick={onClickSearchButton}
+          className="search-icon-btn"
+          type="button"
+          data-testid="searchButton"
+        >
+          <BsSearch className="search-icon" />
+        </button>
+      </div>
+    </div>
+  )
+
   const renderLeftSideSection = () => (
-    <>
+    <div className="jobs-left-section">
       <Profile />
       <hr className="horizontal-line" />
+      <p className="filter-heading">Type of Employment</p>
       <ul>
-        <p className="filter-heading">Type of Employment</p>
-
         {employmentTypesList.map(type => (
-          <DisplayFilters
+          <DisplayEmploymentTypeFilters
             onSelectEmploymentType={onSelectEmploymentType}
             key={type.employmentTypeId}
             type={type}
@@ -134,8 +157,8 @@ const Jobs = observer(() => {
         ))}
       </ul>
       <hr className="horizontal-line" />
+      <p className="filter-heading">Salary Range</p>
       <ul>
-        <p className="filter-heading">Salary Range</p>
         {salaryRangesList.map(salaryRange => (
           <SalaryRangeFilter
             onChangeSalaryRange={onChangeSalaryRange}
@@ -144,33 +167,15 @@ const Jobs = observer(() => {
           />
         ))}
       </ul>
-    </>
+    </div>
   )
 
   return (
     <div className="jobs-main-container">
       <div className="container">
-        <div className="jobs-left-section">{renderLeftSideSection()}</div>
+        {renderLeftSideSection()}
         <div className="jobs-right-section">
-          <div className="search-container">
-            <div className="search-cont">
-              <input
-                className="search-input"
-                type="search"
-                placeholder="Search"
-                value={searchInput}
-                onChange={onChangeSearchInput}
-              />
-              <button
-                onClick={onClickSearchButton}
-                className="search-icon-btn"
-                type="button"
-                data-testid="searchButton"
-              >
-                <BsSearch className="search-icon" />
-              </button>
-            </div>
-          </div>
+          {renderJobsSearchInputField()}
           {renderJobsRightSideSection()}
         </div>
       </div>

@@ -65,7 +65,7 @@ const JobDetails = observer(() => {
   )
 
   const renderSimilarJobs = () => (
-    <div className="similar-jobs-container">
+    <div className="similar-jobs-main-container">
       <h1>Similar jobs</h1>
       <ul className="similar-jobs">
         {similarJobsData.map(job => (
@@ -89,7 +89,18 @@ const JobDetails = observer(() => {
     )
   }
 
-  const renderJobSuccessView = () => {
+  const renderSkillsView = skills => (
+    <>
+      <h1>Skills</h1>
+      <ul className="skills-main-container">
+        {skills.map(skill => (
+          <Skills key={skill.id} skill={skill} />
+        ))}
+      </ul>
+    </>
+  )
+
+  const renderJobInformationInDetailedView = () => {
     const {
       companyLogoUrl,
       companyWebsiteUrl,
@@ -103,63 +114,61 @@ const JobDetails = observer(() => {
       title,
     } = jobDetailsData
     return (
-      <>
-        <div className="job-details-main-container">
-          <div className="job-logo-container">
-            <img
-              className="job-logo"
-              src={companyLogoUrl}
-              alt="job details company logo"
-            />
-            <div className="job-role-container">
-              <h1 className="title">{title}</h1>
-              <div className="rating-container">
-                <AiFillStar className="star" />
-                <p className="rating">{rating}</p>
-              </div>
+      <div className="job-details-main-container">
+        <div className="job-logo-container">
+          <img
+            className="job-logo"
+            src={companyLogoUrl}
+            alt="job details company logo"
+          />
+          <div className="job-role-container">
+            <h1 className="title">{title}</h1>
+            <div className="rating-container">
+              <AiFillStar className="star" />
+              <p className="rating">{rating}</p>
             </div>
-          </div>
-          <div className="location-salary-container">
-            <div className="location-job-type-container">
-              <div className="location-container">
-                <IoLocationOutline />
-                <p className="location-package-content">{location}</p>
-              </div>
-              <div className="employment-container">
-                <BsBriefcase />
-                <p className="location-package-content">{employmentType}</p>
-              </div>
-            </div>
-            <p className="location-package-content">{packagePerAnnum}</p>
-          </div>
-          <hr className="job-card-hr" />
-          <div className="job-details-bottom-section">
-            <div className="description-container">
-              <h1 className="description-heading">Description</h1>
-              <a
-                href={companyWebsiteUrl}
-                className="visit-link"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Visit <BiLinkExternal />
-              </a>
-            </div>
-            <p className="job-description">{jobDescription}</p>
-            <h1>Skills</h1>
-
-            <ul className="skills-main-container">
-              {skills.map(skill => (
-                <Skills key={skill.id} skill={skill} />
-              ))}
-            </ul>
-            <div>{renderLifeAtCompany(lifeAtCompany)}</div>
           </div>
         </div>
-        <div className="similar-jobs-main-container">{renderSimilarJobs()}</div>
-      </>
+        <div className="location-salary-container">
+          <div className="location-job-type-container">
+            <div className="location-container">
+              <IoLocationOutline />
+              <p className="location-package-content">{location}</p>
+            </div>
+            <div className="employment-container">
+              <BsBriefcase />
+              <p className="location-package-content">{employmentType}</p>
+            </div>
+          </div>
+          <p className="location-package-content">{packagePerAnnum}</p>
+        </div>
+        <hr className="job-card-hr" />
+        <div className="job-details-bottom-section">
+          <div className="description-heading-container">
+            <h1 className="description-heading">Description</h1>
+            <a
+              href={companyWebsiteUrl}
+              className="visit-link"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Visit <BiLinkExternal />
+            </a>
+          </div>
+          <p className="job-description">{jobDescription}</p>
+          {renderSkillsView(skills)}
+          {renderLifeAtCompany(lifeAtCompany)}
+        </div>
+      </div>
     )
   }
+
+  const renderJobSuccessView = () => (
+    <>
+      {renderJobInformationInDetailedView()}
+      {renderSimilarJobs()}
+    </>
+  )
 
   const renderJobDetails = () => {
     switch (jobDetailsApiStatus) {

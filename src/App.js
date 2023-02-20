@@ -21,6 +21,7 @@ const App = observer(() => (
       <Route path="/" element={<Home />} />
       <Route path="/jobs" element={<Jobs />} />
       <Route path="/jobs/:id" element={<JobDetails />} />
+      <Route element={<NotFound />} />
     </Routes>
   </StoresContext.Provider>
 ))

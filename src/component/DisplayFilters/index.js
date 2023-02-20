@@ -1,6 +1,6 @@
 import './index.css'
 
-const DisplayFilters = props => {
+const DisplayEmploymentTypeFilters = props => {
   const {type, onSelectEmploymentType} = props
   const {employmentTypeId, label} = type
 
@@ -19,4 +19,4 @@ const DisplayFilters = props => {
   )
 }
 
-export default DisplayFilters
+export default DisplayEmploymentTypeFilters

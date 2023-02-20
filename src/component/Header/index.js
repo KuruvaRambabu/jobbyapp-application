@@ -1,18 +1,11 @@
-import {useContext} from 'react'
-
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
 import {RiHome4Fill, RiLogoutBoxRLine} from 'react-icons/ri'
 import {BsBriefcase} from 'react-icons/bs'
 
 import './index.css'
-import StoresContext from '../context/storeContext'
 
 const Header = props => {
-  const store = useContext(StoresContext)
-  const {loginStore} = store
-  const {OnClickLogin, apiStatus} = loginStore
-
   const onClickLogout = () => {
     Cookies.remove('jwt_token')
     const {history} = props

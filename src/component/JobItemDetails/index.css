@@ -22,7 +22,7 @@
   flex-direction: column;
 }
 
-.description-container {
+.description-heading-container {
   display: flex;
   justify-content: space-between;
 }

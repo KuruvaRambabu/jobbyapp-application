@@ -18,9 +18,12 @@ const App = observer(() => (
   <StoresContext.Provider value={{loginStore, jobStore}}>
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/jobs" element={<Jobs />} />
-      <Route path="/jobs/:id" element={<JobDetails />} />
+      <Route path="/" element={<ProtectedRoute component={Home} />} />
+      <Route path="/jobs" element={<ProtectedRoute component={Jobs} />} />
+      <Route
+        path="/jobs/:id"
+        element={<ProtectedRoute component={JobDetails} />}
+      />
       <Route element={<NotFound />} />
     </Routes>
   </StoresContext.Provider>

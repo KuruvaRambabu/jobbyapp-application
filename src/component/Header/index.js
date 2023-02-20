@@ -1,14 +1,22 @@
+import {useContext} from 'react'
 import Cookies from 'js-cookie'
 import {Link, useNavigate} from 'react-router-dom'
 import {RiHome4Fill, RiLogoutBoxRLine} from 'react-icons/ri'
 import {BsBriefcase} from 'react-icons/bs'
 
+import StoresContext from '../context/storeContext'
+
 import './index.css'
 
 const Header = () => {
+  const store = useContext(StoresContext)
+  const {loginStore} = store
+  const {onClickLogout} = loginStore
+
   const navigate = useNavigate()
-  const onClickLogout = () => {
-    Cookies.remove('jwt_token')
+
+  const onClickLogoutBtn = () => {
+    onClickLogout()
     navigate('/login', {replace: true})
   }
 
@@ -46,11 +54,11 @@ const Header = () => {
         </li>
       </div>
       <li>
-        <button onClick={onClickLogout} className="logout-btn" type="button">
+        <button onClick={onClickLogoutBtn} className="logout-btn" type="button">
           Logout
         </button>
         <button
-          onClick={onClickLogout}
+          onClick={onClickLogoutBtn}
           className="logout-btn-mobile"
           type="button"
         >

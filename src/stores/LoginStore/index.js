@@ -42,6 +42,10 @@ class LoginStore {
     this.apiStatus = apiConstants.failure
     this.errorMessage = errMsg
   }
+
+  onClickLogout = () => {
+    Cookies.remove('jwt_token')
+  }
 }
 
 export default LoginStore
